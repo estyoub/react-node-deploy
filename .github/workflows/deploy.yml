@@ -1,4 +1,4 @@
-name: Deploy Node.js App
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -8,12 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    services:
-      mongodb:
-        image: mongo:5.0 # Specify a stable version of MongoDB
-        ports:
-          - 27017:27017
 
     steps:
       - name: Checkout code
@@ -27,14 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Wait for MongoDB to be ready
-        run: |
-          while ! nc -z localhost 27017; do
-            echo "Waiting for MongoDB to be ready..."
-            sleep 2
-          done
+      - name: Build React app
+        run: npm run build
 
-      - name: Start server
-        env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }} # Use the secret for MongoDB URI
-        run: npm start
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
