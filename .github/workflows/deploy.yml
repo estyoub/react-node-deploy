@@ -3,11 +3,17 @@ name: Deploy Node.js App
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:5.0 # Specify a stable version of MongoDB
+        ports:
+          - 27017:27017
 
     steps:
       - name: Checkout code
@@ -16,10 +22,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  
+          node-version: '16'
 
       - name: Install dependencies
         run: npm install
 
+      - name: Wait for MongoDB to be ready
+        run: |
+          until mongo --host localhost --eval 'db.runCommand({ ping: 1 })'; do
+            echo "Waiting for MongoDB to be ready..."
+            sleep 2
+          done
+
       - name: Start server
-        run: npm start  
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }} # Use the secret for MongoDB URI
+        run: npm start
