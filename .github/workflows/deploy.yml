@@ -14,10 +14,10 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
-        options: > 
-          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'" 
-          --health-interval 10s 
-          --health-timeout 5s 
+        options: >
+          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
 
     steps:
@@ -29,16 +29,16 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./backend
+
       - name: Wait for MongoDB to be ready
         run: |
           until mongo --host localhost --eval 'db.runCommand({ ping: 1 })'; do
             echo "Waiting for MongoDB to be ready..."
             sleep 2
           done
-
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./backend
 
       - name: Start server
         env:
