@@ -1,11 +1,11 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/react-node-app', {
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/react-node-app';
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
